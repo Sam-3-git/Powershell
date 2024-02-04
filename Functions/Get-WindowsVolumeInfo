@@ -1,0 +1,105 @@
+# Get OS Info Function
+Function Get-WindowsVolumeInfo {
+    <#
+    .DESCRIPTION
+        Function to get information about a local or target local disks
+
+    .PARAMETER ComputerName
+        Target Computer Names. Defaults to Local Host if not passed
+
+    .PARAMETER OutPath
+        Error Log location. Defaults to .\SMT.log
+
+    .EXAMPLE
+        # To run on remote host
+        Get-WindowsVolumeInfo -ComputerName RemoteComputer01
+
+    .EXAMPLE
+        # To run on remote hosts
+        Get-WindowsVolumeInfo -ComputerName RemoteComputer01,RemoteComputer02  
+        
+    .EXAMPLE
+        # To specify log location
+        Get-WindowsVolumeInfo -OutPath "C:\Logs\NewErrorLogLocation.txt"  
+
+    #>
+    PARAM(
+        [Parameter()]
+        [String[]]$ComputerName=$env:COMPUTERNAME,
+        
+        [Parameter()]
+        [String]$OutPath="$PSScriptRoot\SMT.log"     
+    )
+
+    # Logging Function
+    ##################
+    Function Write-Log
+    {
+ 
+        PARAM(
+            [String]$Message,
+            [int]$Severity,
+            [string]$Component
+        )
+            $LogPath = $OutPath
+            $TimeZoneBias = Get-WMIObject -Query "Select Bias from Win32_TimeZone"
+            $Date= Get-Date -Format "HH:mm:ss.fff"
+            $Date2= Get-Date -Format "MM-dd-yyyy"
+            $Type=1
+         
+            "<![LOG[$Message]LOG]!><time=$([char]34)$Date$($TimeZoneBias.bias)$([char]34) date=$([char]34)$date2$([char]34) component=$([char]34)$Component$([char]34) context=$([char]34)$([char]34) type=$([char]34)$Severity$([char]34) thread=$([char]34)$([char]34) file=$([char]34)$([char]34)>"| Out-File -FilePath "$LogPath" -Append -NoClobber -Encoding default
+    }
+    ##################
+
+    $ComputerName | ForEach-Object -Begin {
+        $OutputTable = $null
+        $OutputTable = New-Object System.Data.DataTable
+        $OutputTable.Columns.AddRange(@("Computer Name","Drive","Drive Type","FreeSpace","Size"))
+    } -Process {
+        $ScriptBlock = {
+            # Get WMI info
+            $Disks = Get-WmiObject -Class Win32_LogicalDisk
+            # Create passthru table
+            $PassthruTable = New-Object System.Data.DataTable
+            $PassthruTable.Columns.AddRange(@("Computer Name","Drive","Drive Type","Size","Free Space"))
+            foreach ($Disk in $Disks) {
+                switch ($Disk.DriveType) {
+                    0 {$DriveType = "Unkown"}
+                    1 {$DriveType = "No Root Directory"}
+                    2 {$DriveType = "Removable Disk"}
+                    3 {
+                        $DriveType = "Local Disk";
+                        $DiskSize = [math]::Round($Disk.Size/1GB, 2);
+                        $DiskFreeSpace = [math]::Round($Disk.FreeSpace/1GB, 2);
+                        $PassthruTable.Rows.Add($env:COMPUTERNAME.Trim(),$Disk.DeviceID.Trim(),$DriveType.Trim(),$DiskSize, $DiskFreeSpace) | Out-Null 
+                      }
+                    4 {$DriveType = "Network Drive"}
+                    5 {$DriveType = "Compact Disk"}
+                    6 {$DriveType = "RAM Disk"}
+                    default {$DriveType = "Unkown"}
+                }
+            }
+            return $PassthruTable
+        }
+
+        # Check if localhost
+        if ($_ -eq $env:COMPUTERNAME) {
+            $PassthruTable = Invoke-Command -ScriptBlock $ScriptBlock
+            $OutputTable.Rows.Add($PassthruTable.'Computer Name',$PassthruTable.Drive,$PassthruTable.'Drive Type', $PassthruTable.Size,$PassthruTable.'Free Space') | Out-Null
+            Write-Log -Message "Invoke Command run on $_" -Severity 1 -Component "GetDiskInfo"
+        }
+        Else {
+            try {
+                $PassthruTable = Invoke-Command -ComputerName $_ -ScriptBlock $ScriptBlock -ErrorAction Stop
+                $OutputTable.Rows.Add($PassthruTable.'Computer Name',$PassthruTable.Drive,$PassthruTable.'Drive Type', $PassthruTable.Size,$PassthruTable.'Free Space') | Out-Null
+                Write-Log -Message "Invoke Command run on $_" -Severity 1 -Component "GetDiskInfo"
+            }
+            catch {
+                Write-Log -Message "$_" -Severity 3 -Component "GetDiskInfo"
+            }
+        }
+    } -End {
+          
+    }
+    return $OutputTable
+}
