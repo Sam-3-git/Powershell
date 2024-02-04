@@ -1,0 +1,4 @@
+# Create Module Path for SMT
+
+$ModulePath = (((Get-Content Env:\PSModulePath) -split ';')[0]) + "\SMT"
+New-Item -Type Directory -Path $ModulePath
