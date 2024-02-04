@@ -52,7 +52,7 @@ Function Get-WindowsInfo {
     ##################
 
     $ComputerName | ForEach-Object -Begin {
-        $OutputObject = $null
+        $OutputTable = $null
         $OutputTable = New-Object System.Data.DataTable
         $OutputTable.Columns.AddRange(@("ComputerName","Domain","Admin Password","Model", "Manufacturer", "BIOS Serial", "Caption", "OS Version"))
     } -Process {
@@ -105,7 +105,6 @@ Function Get-WindowsInfo {
                 Write-Log -Message "Invoke Command run on $_" -Severity 1 -Component "GetOSInfo"
             }
             catch {
-                $_
                 Write-Log -Message "$_" -Severity 3 -Component "GetOSInfo"
             }
         }
