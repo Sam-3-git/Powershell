@@ -132,7 +132,7 @@ Function Get-WindowsInfo {
                                 'BIOSSerial'=$BIOS.SerialNumber.Trim();
                                }
                 $OutputObject = New-Object -TypeName PSObject -Property $Properties
-                #$OutputObject.PSObject.TypeNames.Insert(0,'MOL.SystemInfo')
+                $OutputObject.PSObject.TypeNames.Insert(0,'SMT.GetWindowsInfo')
                 Write-Output $OutputObject
             }
         } -End {
