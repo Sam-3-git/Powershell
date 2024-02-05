@@ -122,7 +122,7 @@ Function Get-WindowsInfo {
             
                 # Output Properties
                 $Properties = @{
-                                'ComputerName'=$env:COMPUTERNAME.Trim();
+                                'ComputerName'=$OS.Name.Trim();
                                 'Domain'=$OS.Domain.Trim();
                                 'OSBuild'=$Version.Caption.Trim();
                                 'OSBuildNumber'=$OSVersion.Trim();
@@ -142,3 +142,6 @@ Function Get-WindowsInfo {
 
     }
 }
+Export-ModuleMember -Variable $LogPref
+Export-ModuleMember -Function Write-Log,
+                              Get-WindowsInfo
