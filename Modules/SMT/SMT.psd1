@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'C:\Users\LabAdmin\Documents\WindowsPowerShell\Modules\SMT\SMT.psm1'
+RootModule = 'SMT.psm1'
 
 # Version number of this module.
 ModuleVersion = '1.0'
@@ -60,11 +60,10 @@ PowerShellVersion = '5.1'
 # ScriptsToProcess = @()
 
 # Type files (.ps1xml) to be loaded when importing this module
-# TypesToProcess = @()
+TypesToProcess = 'SMTTypes.ps1xml'
 
 # Format files (.ps1xml) to be loaded when importing this module
-FormatsToProcess = 
-               '..\..\..\..\Users\LabAdmin\Documents\WindowsPowerShell\Modules\SMT\SMT.format.ps1xml'
+FormatsToProcess = 'SMT.format.ps1xml'
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 # NestedModules = @()
