@@ -9,11 +9,11 @@
             <TableControl>
                 <TableHeaders>
                     <TableColumnHeader>
-                        <Width>12</Width>
+                        <Width>14</Width>
                         <Label>Computer Name</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>8</Width>
+                        <Width>14</Width>
                         <Label>Domain</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
@@ -21,23 +21,23 @@
                         <Label>OS Build</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>12</Width>
+                        <Width>18</Width>
                         <Label>OS Build Number</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>28</Width>
+                        <Width>16</Width>
                         <Label>Admin Password</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>20</Width>
+                        <Width>14</Width>
                         <Label>Manufacturer</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>20</Width>
+                        <Width>14</Width>
                         <Label>Model</Label>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Width>20</Width>
+                        <Width>28</Width>
                         <Label>BIOS Serial</Label>
                     </TableColumnHeader>
                 </TableHeaders>
